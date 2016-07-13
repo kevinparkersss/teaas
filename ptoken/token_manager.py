@@ -1,6 +1,7 @@
 from .signer import Signer
 from .cipher import Cipher
 from .payload import Payload
+from hashlib import md5
 import json
 
 
@@ -18,15 +19,19 @@ class TokenManager:
         :return:
         """
 
-
-    def to_token(self, uid, secret_key, token_ttl=300, remember_ttl=0):
+    @classmethod
+    def to_token(cls, uid, secret_key, token_ttl=300, remember_ttl=0):
         """
         Generate token by create payload and call __payload_to_token
         :param uid:
         :param secret_key:
+        :type secret_key str
         :param token_ttl
         :param remember_ttl
         :return:
         """
-        salt = Cipher.generate_salt()
-        payload = Payload.new(uid, secret_key, salt, token_ttl, remember_ttl)
+
+        salt = md5(secret_key.encode("utf-8")).hexdigest()
+        pl = Payload.new(uid=uid, secret_key=secret_key, salt=salt, token_ttl=token_ttl, remember_ttl=remember_ttl)
+        token = Cipher.encrypt(pl.sign()[1].encode(), secret_key, salt)
+        return token
