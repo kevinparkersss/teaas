@@ -64,6 +64,19 @@ class Payload:
     def additional_data(self):
         return self.__additional_data_
 
+    @property
+    def remember_key(self):
+        if self.__remember_key_ is None:
+            self.__remember_key_ = Cipher.generate_salt(64)
+        return self.__remember_key_
+
+    @property
+    def remember_expired_at(self):
+        if self.__remember_expired_at_ is None:
+            self.__remember_expired_at_ = int(time.time()) + self.remember_ttl
+
+        return self.__remember_expired_at_
+
     def generate_random_str(self):
         """
         Generate random string
@@ -81,16 +94,13 @@ class Payload:
             "uid": self.uid,
             "iv": self.__random_str_,
             "expired_at": int(time.time()) + self.token_ttl if self.__expired_at_ is None else self.__expired_at_,
-            "remember_expired_at": 0
+            "remember_key": self.remember_key,
+            "remember_expired_at": self.remember_expired_at
         }
         data.update(kwargs)
 
         if self.additional_data is not None and not self.additional_data == "":
             data["additional_data"] = self.additional_data
-        if self.remember_ttl > 0 or self.__remember_key_ is not None:
-            data["remember_key"] = Cipher.generate_salt(64) if self.__remember_key_ is None else self.__remember_key_
-            data["remember_expired_at"] = int(
-                time.time()) + self.remember_ttl if self.__remember_expired_at_ is None else self.__remember_expired_at_
 
         return data, json.dumps(data)
 
@@ -103,7 +113,7 @@ class Payload:
         """
         try:
             data = json.loads(data)
-            print(data)
+
             self.__uid_ = data["uid"]
             self.__signature_ = data["signature"]
             self.__random_str_ = data["iv"]
@@ -134,7 +144,7 @@ class Payload:
         self.__signature_ = self.__sign_()
         return self.serialize(signature=self.__signature_)
 
-    def verify(self):
+    def verify(self, remember_key=None):
         """
         Verify signature
         :return:
@@ -147,6 +157,10 @@ class Payload:
             return False
 
         if self.__expired_at_ < int(time.time()):
+            if remember_key is not None and remember_key == self.remember_key \
+                    and self.remember_expired_at > int(time.time()):
+                return True
+
             return False
 
         return True

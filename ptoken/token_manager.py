@@ -10,7 +10,7 @@ class TokenManager:
     """
 
     @classmethod
-    def to_token(cls, uid, secret_key, token_ttl=10, remember_ttl=10):
+    def to_token(cls, uid, secret_key, token_ttl=10, remember_ttl=86500):
         """
         Generate token by create payload and call __payload_to_token
         :param uid:
