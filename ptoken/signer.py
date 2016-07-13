@@ -1,17 +1,15 @@
-from Crypto.Cipher import AES
-from Crypto import Random
 import hmac
 import hashlib
 import base64
 
 
-class signer:
+class Signer:
     """
         Sign into response token
     """
 
     @classmethod
-    def sign(self, msg, secret_key):
+    def sign(cls, msg, secret_key):
         """
         Sign (hash) content
         :param msg:
@@ -25,7 +23,7 @@ class signer:
         return signature
 
     @classmethod
-    def verify(self, signature, msg, secret_key):
+    def verify(cls, signature, msg, secret_key):
         """
         Verify changed content
         :param signature:
@@ -33,4 +31,4 @@ class signer:
         :param secret_key:
         :return:
         """
-        return self.sign(msg, secret_key) == signature
+        return cls.sign(msg, secret_key) == signature

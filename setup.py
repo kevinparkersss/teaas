@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name="token",
     packages=["token"],
-    install_requires=["pycrypto"],
+    install_requires=["pycrypto", "redis"],
     version="0.1",
     description="Restful Token",
     author="Fallen",
