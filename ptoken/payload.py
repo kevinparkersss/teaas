@@ -1,5 +1,4 @@
-import json, redis
-
+import json, time
 from .signer import Signer
 from .cipher import Cipher
 
@@ -21,6 +20,8 @@ class Payload:
     __secret_key_ = ""
     __random_str_ = None
     __signature_ = None
+    __expired_at_ = None
+    __remember_expired_at_ = None
 
     __uid_ = None
     __additional_data_ = ""
@@ -78,14 +79,18 @@ class Payload:
         """
         data = {
             "uid": self.uid,
-            "iv": self.__random_str_
+            "iv": self.__random_str_,
+            "expired_at": int(time.time()) + self.token_ttl if self.__expired_at_ is None else self.__expired_at_,
+            "remember_expired_at": 0
         }
         data.update(kwargs)
 
         if self.additional_data is not None and not self.additional_data == "":
             data["additional_data"] = self.additional_data
-        if self.remember_ttl > 0:
-            data["remember_key"] = Cipher.generate_salt(64)
+        if self.remember_ttl > 0 or self.__remember_key_ is not None:
+            data["remember_key"] = Cipher.generate_salt(64) if self.__remember_key_ is None else self.__remember_key_
+            data["remember_expired_at"] = int(
+                time.time()) + self.remember_ttl if self.__remember_expired_at_ is None else self.__remember_expired_at_
 
         return data, json.dumps(data)
 
@@ -98,9 +103,12 @@ class Payload:
         """
         try:
             data = json.loads(data)
+            print(data)
             self.__uid_ = data["uid"]
             self.__signature_ = data["signature"]
             self.__random_str_ = data["iv"]
+            self.__expired_at_ = data["expired_at"]
+            self.__remember_expired_at_ = data["remember_expired_at"]
             self.__remember_key_ = data["remember_key"] if "remember_key" in data else None
             self.__additional_data_ = data["additional_data"] if "additional_data" in data else None
 
@@ -134,4 +142,11 @@ class Payload:
         guess_signature = Cipher.decrypt(self.__signature_, self.secret_key, self.salt + self.__random_str_)
         if guess_signature is None:
             return False
-        return self.__sign_() == self.__signature_
+
+        if not self.__sign_() == self.__signature_:
+            return False
+
+        if self.__expired_at_ < int(time.time()):
+            return False
+
+        return True

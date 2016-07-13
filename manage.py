@@ -1,4 +1,6 @@
 from ptoken.token_manager import TokenManager
+import time
 
 if __name__ == "__main__":
-   print(TokenManager.to_token(1,"123456"))
+    token = TokenManager.to_token(1, "123456")
+    print(TokenManager.from_token(token, "123456"))
