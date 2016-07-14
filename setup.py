@@ -1,8 +1,8 @@
 from distutils.core import setup
 
 setup(
-    name="token",
-    packages=["token"],
+    name="ptoken",
+    packages=["ptoken"],
     install_requires=["pycrypto", "redis"],
     version="0.1",
     description="Token Helper",
