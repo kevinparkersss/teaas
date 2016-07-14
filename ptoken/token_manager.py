@@ -2,7 +2,6 @@ from .cipher import Cipher
 from .payload import Payload
 from hashlib import md5
 from .cache.frontend import Frontend
-import time
 
 
 class TokenManager:

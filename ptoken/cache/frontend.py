@@ -1,4 +1,4 @@
-import sys, importlib
+import importlib
 from ptoken.cache.backend import Backend
 
 
