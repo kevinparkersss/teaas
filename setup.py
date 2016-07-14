@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="ptoken",
-    packages=["ptoken"],
+    packages=["ptoken", "ptoken.cache"],
     install_requires=["pycrypto", "redis"],
     version="0.1",
     description="Token Helper",
