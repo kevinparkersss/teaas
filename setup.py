@@ -5,10 +5,10 @@ setup(
     packages=["token"],
     install_requires=["pycrypto", "redis"],
     version="0.1",
-    description="Restful Token",
+    description="Token Helper",
     author="Fallen",
-    url="https://github.com/tuanlq11/python_token.git",
-    download_url="https://github.com/tuanlq11/python_token.git",
+    url="https://github.com/tuanlq11/python_token",
+    download_url="https://github.com/tuanlq11/python_token/tarball/0.1",
     keywords=["security"],
     classifiers=[]
 )
