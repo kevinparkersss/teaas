@@ -1,4 +1,5 @@
 .idea/*
+ptoken.egg-info/*
 manage.py
 __pycache__
 build/*

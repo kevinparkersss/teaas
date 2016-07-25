@@ -7,7 +7,7 @@ class Backend(object):
     __metaclass__ = ABCMeta
 
     @abstractclassmethod
-    def __init__(self, *args):
+    def __init__(self, **kwargs):
         pass
 
     @abstractclassmethod
@@ -41,6 +41,7 @@ class Redis(Backend):
 
     def __init__(self, **kwargs):
         self.__create_pool(**kwargs)
+        super(Redis, self).__init__(**kwargs)
 
     def __create_pool(self, host="127.0.0.1", password=None, db=0, port=6379, max_connections=1, force=False):
         if self.__pool is not None and force is False:
